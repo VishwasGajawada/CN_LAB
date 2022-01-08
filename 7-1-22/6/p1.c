@@ -4,21 +4,41 @@
 #include<sys/wait.h>
 
 int main(){
-    // int fd1[2]; // from p1 to p2
+    // since p2 does not know about the pipes we are connecting here, we can directly dup2 its input and output fds. Since ever process has them.
+
+    int fd1[2]; // from p1 to p2
+    int fd2[2]; // from p2 to p1
     
-    // pipe(fd1);
+    pipe(fd1);
+    pipe(fd2);
 
     int c = fork();
 
     if(c>0){
-        dup2(100,1);
-        printf("hi\n");
-        // wait(NULL);
+        close(fd1[0]);
+        close(fd2[1]);
+
+        char p1_msg[] = "Hello from p1";
+        printf("Sending from p1: %s\n",p1_msg);
+        write(fd1[1],p1_msg,strlen(p1_msg)+1);
+        close(fd1[1]);
+
+        wait(NULL);
+
+        // now read message written from p2
+        char p2_msg[70] = {0};
+        read(fd2[0],p2_msg,71);
+        printf("Received from p2: \"%s.\"\n",p2_msg);
+        close(fd2[0]);
     }else{
-        dup2(100,0);
-        char msg[50];
-        scanf("%s",msg);
-        printf("in child : %s\n",msg);
+        close(fd1[1]);
+        close(fd2[0]);
+
+        dup2(fd1[0],0);
+        dup2(fd2[1],1);
+
+        char *args[] = {"./p2.exe",NULL};
+        execvp(args[0],args);
     }
     return 0;
 }
