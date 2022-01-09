@@ -21,11 +21,19 @@ int main(int argc, char **argv){
     char *p1_msg = (char *)malloc(sz* sizeof(char));
     char *p2_msg = (char *)malloc(sz* sizeof(char));
 
+    bool firstTime = true;
     while(true){
+
+
         // read message from p1
         read(pipeInCopy,p1_msg,sz);
         if(strcmp(p1_msg,"exit")==0){
             break;
+        }
+
+        if(firstTime) {
+            printf("\nI am process P2\n\n");
+            firstTime = false;
         }
 
         // this printf statement sends output to screen i.e the original stdout
