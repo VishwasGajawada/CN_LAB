@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<stdbool.h>
 #include<stdlib.h>
 #include<string.h>
 #include<unistd.h>
@@ -12,22 +13,34 @@ int main(int argc, char **argv){
     int stdOutCopy = atoi(argv[1]);
     int stdInCopy = atoi(argv[2]);
 
-    char *buf;
-    size_t sz = 30;
-    buf = (char *)malloc(sz* sizeof(char));
-    if(getline(&buf,&sz,stdin) == -1){
-        printf("Error reading\n");
-        return 1;
-    };
+    // since p2 should be able to read from keyboard and output to monitor, dup2 back to original stdout and stdins
     dup2(stdOutCopy,1);
-    // this printg statement sends output to screen i.e the original stdout
-    printf("hello screen\n");
-    // fflush(1);
+    dup2(stdInCopy, 0);
+    
+    size_t sz = 100;
+    char *p1_msg = (char *)malloc(sz* sizeof(char));
+    char *p2_msg = (char *)malloc(sz* sizeof(char));
 
-    dup2(pipeOutCopy, 1);
-    // this printf statement sends output to the pipe that p1 is reading from
-    printf("Hello p1, recieved this message from you: '%s'",buf);
+    while(true){
+        // read message from p1
+        read(pipeInCopy,p1_msg,sz);
+        if(strcmp(p1_msg,"exit")==0){
+            break;
+        }
 
+        // this printf statement sends output to screen i.e the original stdout
+        printf("Recieved in  P2 : \"%s\"\n\n",p1_msg);
+        printf("Enter in P2 : \n");
+
+        int x = getline(&p2_msg,&sz,stdin);
+        p2_msg[x-1] = '\0';
+
+        write(pipeOutCopy,p2_msg,strlen(p2_msg)+1);
+        if(strcmp(p2_msg,"exit")==0){
+            break;
+        }
+
+    }
 
 
     return 0;

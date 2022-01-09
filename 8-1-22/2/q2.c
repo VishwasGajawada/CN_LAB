@@ -1,4 +1,6 @@
 #include<stdio.h>
+#include<stdlib.h>
+#include<stdbool.h>
 #include<string.h>
 #include<unistd.h>
 #include<sys/wait.h>
@@ -12,22 +14,37 @@ int main(){
     pipe(fd1);
     pipe(fd2);
 
+    printf("Enter 'exit' to exit\n\n");
+
     int c = fork();
 
     if(c>0){
         close(fd1[0]);
         close(fd2[1]);
 
-        char p1_msg[] = "Hello from p1";
-        printf("Sending from p1: %s\n",p1_msg);
-        write(fd1[1],p1_msg,strlen(p1_msg)+1);
+        size_t sz = 100;
+        char *p1_msg = (char *)malloc(sz* sizeof(char));
+        char *p2_msg = (char *)malloc(sz* sizeof(char));
+
+        while(true){
+
+            printf("Enter in P1 : \n");
+            int x = getline(&p1_msg,&sz,stdin);
+            p1_msg[x-1] = '\0';
+            write(fd1[1],p1_msg,strlen(p1_msg)+1);
+
+            if(strcmp(p1_msg,"exit")==0){
+                break;
+            }
+
+            // now read message written from p2
+            read(fd2[0],p2_msg,sz);
+            if(strcmp(p2_msg,"exit")==0){
+                break;
+            }
+            printf("Received in P1: \"%s\"\n\n",p2_msg);
+        }
         close(fd1[1]);
-
-
-        // now read message written from p2
-        char p2_msg[70] = {0};
-        read(fd2[0],p2_msg,71);
-        printf("Received from p2: \"%s.\"\n",p2_msg);
         close(fd2[0]);
         
         wait(NULL);
