@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<stdlib.h>
 #include<stdbool.h>
 #include<string.h>
 #include<unistd.h>
@@ -18,10 +19,13 @@ int main(){
         close(fd1[0]);
         close(fd2[1]);
         
-        char msg[100];
+        size_t sz = 100;
+        char *msg = (char *)malloc(sz* sizeof(char));
         while(true){
             printf("Enter in P :\n");
-            scanf("%s",msg);
+            int x = getline(&msg,&sz,stdin);
+            msg[x-1] = '\0';
+
             write(fd1[1],msg,strlen(msg)+1);
 
             if(strcmp(msg,"exit") == 0){
@@ -39,13 +43,13 @@ int main(){
         close(fd2[0]);
 
         wait(NULL);
-
-
     }else{
         close(fd1[1]);
         close(fd2[0]);
 
-        char msg[100];
+        size_t sz = 100;
+        char *msg = (char *)malloc(sz* sizeof(char));
+
         while(true){
             read(fd1[0],msg,20);
             if(strcmp(msg,"exit") == 0){
@@ -54,7 +58,8 @@ int main(){
             printf("Recieved in P' : '%s'\n\n",msg);
 
             printf("Enter in P' :\n");
-            scanf("%s",msg);
+            int x = getline(&msg,&sz,stdin);
+            msg[x-1] = '\0';
             write(fd2[1],msg,strlen(msg)+1);
         }
         close(fd1[0]);
