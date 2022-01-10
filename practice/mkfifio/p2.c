@@ -25,7 +25,7 @@ int main(){
         perror(strerror(errno));
         return 1;
     }
-    char buf[10];
+    char buf[10]={0};
     read(rffd, buf, 5);
     printf("p2 read %s\n", buf);
     close(rffd);
