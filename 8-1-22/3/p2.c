@@ -34,15 +34,15 @@ int main(int argc, char** argv) {
 
             // read from p1 and forward to p3
             read(pipeInCopy, p1_msg, sz);
+            if (firstTime) {
+                printf("\nI am process P2\n\n");
+                firstTime = false;
+            }
             write(fd1[1], p1_msg, strlen(p1_msg) + 1);
             if (strcmp(p1_msg, "exit") == 0) {
                 break;
             }
 
-            if (firstTime) {
-                printf("\nI am process P2\n\n");
-                firstTime = false;
-            }
 
             // read from p3 and forward to p1
             read(fd2[0], p3_msg, sz);
