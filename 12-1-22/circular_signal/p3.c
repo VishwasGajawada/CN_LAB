@@ -57,8 +57,6 @@ int main(){
 
     // wait for p2 signal and store its p2pid
     pause();
-    // printf("p2pid: %d\n", p2pid);
-    // fflush(stdout);
 
 
     // p3 recieves message from msq of type4 and finds p4pid
@@ -67,8 +65,6 @@ int main(){
         return 1;
     }
     p4pid = atoi(msg.mtext);
-    // printf("p4pid: %d\n", p4pid);
-    // fflush(stdout);
 
 
     // p3 sends signal USR1 to p4

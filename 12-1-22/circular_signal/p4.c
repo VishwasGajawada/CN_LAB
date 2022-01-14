@@ -58,8 +58,6 @@ int main(){
 
     // wait for p3 signal and store its p3pid
     pause();
-    // printf("p3pid: %d\n", p3pid);
-    // fflush(stdout);
     
     // p4 recieves message from msq of type1 and finds p1pid
     if(msgrcv(msqid, &msg, sizeof(msg.mtext), 1, 0) == -1) {
@@ -67,8 +65,6 @@ int main(){
         return 1;
     }
     p1pid = atoi(msg.mtext);
-    // printf("p1pid: %d\n", p1pid);
-    // fflush(stdout);
 
     // p4 sends signal USR1 to p1
     kill(p1pid, SIGUSR1);

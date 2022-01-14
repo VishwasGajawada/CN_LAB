@@ -57,8 +57,6 @@ int main(){
 
     // wait for p1 signal and store its p1pid
     pause();
-    // printf("p1pid: %d\n", p1pid);
-    // fflush(stdout);
 
     // p2 recieves message from ms1 and notes p3pid
     if(msgrcv(msqid, &msg, sizeof(msg.mtext), 3, 0) == -1) {
@@ -66,8 +64,6 @@ int main(){
         return 1;
     }
     p3pid = atoi(msg.mtext);
-    // printf("p3pid: %d\n", p3pid);
-    // fflush(stdout);
 
 
     // p2 sends message containing pid as p1pid, with type value 1

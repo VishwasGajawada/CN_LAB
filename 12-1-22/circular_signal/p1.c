@@ -52,16 +52,12 @@ int main(){
         return 1;
     }
     p2pid = atoi(msg.mtext);
-    // printf("p2pid: %d\n", p2pid);
-    // fflush(stdout);
 
     // sends SIGUSR1 to p2
     kill(p2pid, SIGUSR1);
 
     // wait for p4 signal and store its p4pid
     pause();
-    // printf("p4pid: %d\n", p4pid);
-    // fflush(stdout);
 
     printf("p1pid: %d\n", p1pid);
     printf("p2pid: %d\n", p2pid);
