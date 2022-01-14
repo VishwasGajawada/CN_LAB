@@ -22,6 +22,11 @@ void sigusr1_handler(int signo, siginfo_t *info, void *context) {
         p1pid = info->si_pid;
         return;
     }
+    // else if(sigusr1_count>=2 && sigusr1_count<=4){
+    //     // circular signal
+    //     write(STDOUT_FILENO,"P2 -> P3\n",9);
+    //     kill(p3pid, SIGUSR1);
+    // }
 }
 
 int main(){
@@ -36,7 +41,7 @@ int main(){
     int msqid;
     key_t key;
 
-    key = ftok("p1.c", 'a');
+    key = ftok("p1.c", 'b');
     if (key == -1) {perror("ftok error");return 1;    }
 
     msqid = msgget(key, 0666 | IPC_CREAT);
@@ -52,7 +57,8 @@ int main(){
 
     // wait for p1 signal and store its p1pid
     pause();
-    
+    // printf("p1pid: %d\n", p1pid);
+    // fflush(stdout);
 
     // p2 recieves message from ms1 and notes p3pid
     if(msgrcv(msqid, &msg, sizeof(msg.mtext), 3, 0) == -1) {
@@ -60,6 +66,9 @@ int main(){
         return 1;
     }
     p3pid = atoi(msg.mtext);
+    // printf("p3pid: %d\n", p3pid);
+    // fflush(stdout);
+
 
     // p2 sends message containing pid as p1pid, with type value 1
     msg.mtype = 1;
@@ -71,12 +80,21 @@ int main(){
 
 
     // p2 sends a SIGUSR1 to p3
-    kill(p3pid, SIGUSR1);
 
+    kill(p3pid, SIGUSR1);
     printf("p2pid: %d\n", p2pid);
     printf("p1pid: %d\n", p1pid);
-    printf("p3pid: %d\n", p3pid);
+    printf("p3pid: %d\n\n", p3pid);
     fflush(stdout);
+
+    sleep(5);
+
+    // circular signal
+    // printf("circular signalling 3 times\n");
+    // fflush(stdout);
+    // for(int i=0;i<3;i++){
+    //     pause();
+    // }
 
     return 0;
 }

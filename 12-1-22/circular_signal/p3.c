@@ -22,6 +22,11 @@ void sigusr1_handler(int signo, siginfo_t *info, void *context) {
         p2pid = info->si_pid;
         return;
     }
+    // else if(sigusr1_count>=2 && sigusr1_count<=4){
+    //     // circular signal
+    //     write(STDOUT_FILENO,"P3 -> P4\n",9);
+    //     kill(p4pid, SIGUSR1);
+    // }
 }
 
 int main(){
@@ -36,7 +41,7 @@ int main(){
     int msqid;
     key_t key;
 
-    key = ftok("p1.c", 'a');
+    key = ftok("p1.c", 'b');
     if (key == -1) {perror("ftok error");return 1;    }
 
     msqid = msgget(key, 0666 | IPC_CREAT);
@@ -52,6 +57,8 @@ int main(){
 
     // wait for p2 signal and store its p2pid
     pause();
+    // printf("p2pid: %d\n", p2pid);
+    // fflush(stdout);
 
 
     // p3 recieves message from msq of type4 and finds p4pid
@@ -60,6 +67,8 @@ int main(){
         return 1;
     }
     p4pid = atoi(msg.mtext);
+    // printf("p4pid: %d\n", p4pid);
+    // fflush(stdout);
 
 
     // p3 sends signal USR1 to p4
@@ -67,8 +76,17 @@ int main(){
     
     printf("p3pid: %d\n", p3pid);
     printf("p2pid: %d\n", p2pid);
-    printf("p4pid: %d\n", p4pid);
+    printf("p4pid: %d\n\n", p4pid);
     fflush(stdout);
+
+    sleep(5);
+    // circular signal
+    // printf("circular signalling 3 times\n");
+    // fflush(stdout);
+
+    // for(int i=0;i<3;i++){
+    //     pause();
+    // }
 
     return 0;
 }
