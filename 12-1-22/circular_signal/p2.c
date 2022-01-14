@@ -28,7 +28,7 @@ void sigusr1_handler(int signo, siginfo_t *info, void *context) {
     else if(sigusr1_count>=2 && sigusr1_count<=4){
         // circular signal
         kill(p3pid, SIGUSR1);
-        write(STDOUT_FILENO,"P2 -> P3\n",9);
+        write(STDOUT_FILENO, "P1 -> P2 recieved\n", 18);
         if(sigusr1_count == 4)write(STDOUT_FILENO,"\n",1);
     }
 }
@@ -37,7 +37,7 @@ void sigusr2_handler(int signo){
     sigusr2_count++;
     if(sigusr2_count>=1 && sigusr2_count<=3){
         kill(p1pid, SIGUSR2);
-        write(STDOUT_FILENO,"P2 -> P1\n",9);
+        write(STDOUT_FILENO, "P3 -> P2 recieved\n", 18);
     }else{
         kill(p3pid, SIGUSR2);
         kill(getpid(), SIGINT);

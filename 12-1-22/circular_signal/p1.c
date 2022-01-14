@@ -25,9 +25,11 @@ void sigusr1_handler(int signo, siginfo_t *info, void *context) {
     }
     else if(sigusr1_count>=2 && sigusr1_count<=4){
         // circular signal
+        write(STDOUT_FILENO, "P4 -> P1 recieved\n", 18);
     }
 }
 void sigusr2_handler(int signo){
+    write(STDOUT_FILENO, "P2 -> P1 recieved\n", 18);
 }
 int main(){
     struct sigaction act;
@@ -73,7 +75,6 @@ int main(){
 
     for(int i=0;i<3;i++){
         kill(p2pid, SIGUSR1);
-        write(STDOUT_FILENO, "P1 -> P2\n", 9);
         // send next ciruclar signal after this round finishes
         pause();
     }
@@ -85,13 +86,16 @@ int main(){
 
     for(int i=0;i<3;i++){
         kill(p4pid, SIGUSR2);
-        write(STDOUT_FILENO, "P1 -> P4\n", 9);
         // send next ciruclar signal after this round finishes
         pause();
     }
 
     // now terminate all the process in circular fashion
     kill(p2pid, SIGUSR2);
-
+    if (msgctl(msqid, IPC_RMID, NULL) == -1) {
+        perror("msgctl");
+        return 1;
+    }
+    printf("Message Queue removed\n");
     return 0;
 }
