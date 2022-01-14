@@ -23,9 +23,9 @@ void sigusr1_handler(int signo, siginfo_t *info, void *context) {
         p4pid = info->si_pid;
         return;
     }
-    // else if(sigusr1_count>=2 && sigusr1_count<=4){
-    //     // circular signal
-    // }
+    else if(sigusr1_count>=2 && sigusr1_count<=4){
+        // circular signal
+    }
 }
 
 int main(){
@@ -66,14 +66,18 @@ int main(){
 
     sleep(5);
     // circular signalling p1->p2->p3->p4->p1 3 times
-    // printf("circular signalling 3 times\n");
-    // fflush(stdout);
-    // for(int i=0;i<3;i++){
-    //     kill(p2pid, SIGUSR1);
-    //     write(STDOUT_FILENO, "P1 -> P2\n", 9);
-    //     // send next ciruclar signal after this round finishes
-    //     pause();
-    // }
+    printf("circular signalling 3 times\n");
+    fflush(stdout);
+
+    for(int i=0;i<3;i++){
+        kill(p2pid, SIGUSR1);
+        write(STDOUT_FILENO, "P1 -> P2\n", 9);
+        // send next ciruclar signal after this round finishes
+        pause();
+    }
+
+    // now terminate all the process
+    kill(p2pid, SIGUSR2);
 
     return 0;
 }
