@@ -6,6 +6,7 @@
 /* for msgget, msgsnd, msgrcv */
 #include <sys/msg.h>
 #include <string.h>
+#include <stdlib.h>
 
 struct msgbuf {
     long mtype;
@@ -49,12 +50,33 @@ int main(){
         return 1;
     }
 
-    // wait for p1 signal
+    // wait for p1 signal and store its p1pid
     pause();
     
-    printf("p1pid: %d\n", p1pid);
-    printf("p2pid: %d\n", p2pid);
 
+    // p2 recieves message from ms1 and notes p3pid
+    if(msgrcv(msqid, &msg, sizeof(msg.mtext), 3, 0) == -1) {
+        perror("msgrcv error");
+        return 1;
+    }
+    p3pid = atoi(msg.mtext);
+
+    // p2 sends message containing pid as p1pid, with type value 1
+    msg.mtype = 1;
+    sprintf(msg.mtext, "%d", p1pid);
+    if(msgsnd(msqid, &msg, sizeof(msg.mtext), 0) == -1) {
+        perror("msgsnd error");
+        return 1;
+    }
+
+
+    // p2 sends a SIGUSR1 to p3
+    kill(p3pid, SIGUSR1);
+
+    printf("p2pid: %d\n", p2pid);
+    printf("p1pid: %d\n", p1pid);
+    printf("p3pid: %d\n", p3pid);
+    fflush(stdout);
 
     return 0;
 }

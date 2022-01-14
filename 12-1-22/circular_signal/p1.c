@@ -16,7 +16,22 @@ struct msgbuf {
 int p4pid;
 int p2pid;
 
+int sigusr1_count = 0;
+void sigusr1_handler(int signo, siginfo_t *info, void *context) {
+    sigusr1_count++;
+    if (sigusr1_count == 1) {
+        p4pid = info->si_pid;
+        return;
+    }
+}
+
 int main(){
+    struct sigaction act;
+    act.sa_flags = SA_SIGINFO;
+    act.sa_sigaction = sigusr1_handler;
+
+    sigaction(SIGUSR1, &act, NULL);
+
     int p1pid = getpid();
     struct msgbuf msg;
     int msqid;
@@ -38,9 +53,15 @@ int main(){
     // sends SIGUSR1 to p2
     kill(p2pid, SIGUSR1);
 
+    // wait for p4 signal and store its p4pid
+    pause();
+
+
+
     printf("p1pid: %d\n", p1pid);
     printf("p2pid: %d\n", p2pid);
-
+    printf("p4pid: %d\n", p4pid);
+    fflush(stdout);
 
     return 0;
 }
