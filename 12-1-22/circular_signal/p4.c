@@ -17,6 +17,7 @@ int p1pid;
 int p3pid;
 
 int sigusr1_count = 0;
+int sigusr2_count = 0;
 void sigusr1_handler(int signo, siginfo_t *info, void *context) {
     sigusr1_count++;
     if (sigusr1_count == 1) {
@@ -27,10 +28,19 @@ void sigusr1_handler(int signo, siginfo_t *info, void *context) {
         // circular signal
         kill(p1pid, SIGUSR1);
         write(STDOUT_FILENO,"P4 -> P1\n",9);
+        if(sigusr1_count == 4)write(STDOUT_FILENO,"\n",1);
     }
 }
 void sigusr2_handler(int signo){
+
+    sigusr2_count++;
+    if(sigusr2_count>=1 && sigusr2_count<=3){
+        kill(p3pid, SIGUSR2);
+        write(STDOUT_FILENO,"P4 -> P3\n",9);
+    }else{
+
     kill(getpid(), SIGINT);
+    }
 }
 
 int main(){
@@ -82,8 +92,7 @@ int main(){
     sleep(5);
     
     // circular signal
-    printf("circular signalling 3 times\n");
-    fflush(stdout);
+    // reverse circular signal
 
     while(1){}
 

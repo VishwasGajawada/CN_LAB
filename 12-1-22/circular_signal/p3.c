@@ -16,6 +16,7 @@ struct msgbuf {
 int p4pid;
 int p2pid;
 int sigusr1_count = 0;
+int sigusr2_count = 0;
 void sigusr1_handler(int signo, siginfo_t *info, void *context) {
     sigusr1_count++;
     if (sigusr1_count == 1) {
@@ -26,12 +27,19 @@ void sigusr1_handler(int signo, siginfo_t *info, void *context) {
         // circular signal
         kill(p4pid, SIGUSR1);
         write(STDOUT_FILENO,"P3 -> P4\n",9);
+        if(sigusr1_count == 4)write(STDOUT_FILENO,"\n",1);
     }
 }
 
 void sigusr2_handler(int signo){
+    sigusr2_count++;
+    if(sigusr2_count>=1 && sigusr2_count<=3){
+        kill(p2pid, SIGUSR2);
+        write(STDOUT_FILENO,"P3 -> P2\n",9);
+    }else{
     kill(p4pid, SIGUSR2);
     kill(getpid(), SIGINT);
+    }
 }
 
 int main(){
@@ -82,9 +90,9 @@ int main(){
     fflush(stdout);
 
     sleep(5);
+    
     // circular signal
-    printf("circular signalling 3 times\n");
-    fflush(stdout);
+    // reverse circular signal
 
     while(1){}
     return 0;

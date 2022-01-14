@@ -27,13 +27,15 @@ void sigusr1_handler(int signo, siginfo_t *info, void *context) {
         // circular signal
     }
 }
-
+void sigusr2_handler(int signo){
+}
 int main(){
     struct sigaction act;
     act.sa_flags = SA_SIGINFO;
     act.sa_sigaction = sigusr1_handler;
 
     sigaction(SIGUSR1, &act, NULL);
+    signal(SIGUSR2, sigusr2_handler);
 
     int p1pid = getpid();
     struct msgbuf msg;
@@ -64,7 +66,7 @@ int main(){
     printf("p4pid: %d\n\n", p4pid);
     fflush(stdout);
 
-    sleep(5);
+    sleep(10);
     // circular signalling p1->p2->p3->p4->p1 3 times
     printf("circular signalling 3 times\n");
     fflush(stdout);
@@ -76,7 +78,19 @@ int main(){
         pause();
     }
 
-    // now terminate all the process
+    sleep(5);
+    // reverse circular signalling p1->p4->p3->p2->p1 3 times
+    printf("reverse circular signalling 3 times\n");
+    fflush(stdout);
+
+    for(int i=0;i<3;i++){
+        kill(p4pid, SIGUSR2);
+        write(STDOUT_FILENO, "P1 -> P4\n", 9);
+        // send next ciruclar signal after this round finishes
+        pause();
+    }
+
+    // now terminate all the process in circular fashion
     kill(p2pid, SIGUSR2);
 
     return 0;
