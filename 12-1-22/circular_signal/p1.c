@@ -68,7 +68,7 @@ int main(){
     printf("p4pid: %d\n\n", p4pid);
     fflush(stdout);
 
-    sleep(10);
+    // sleep(10);
     // circular signalling p1->p2->p3->p4->p1 3 times
     printf("circular signalling 3 times\n");
     fflush(stdout);
@@ -79,7 +79,7 @@ int main(){
         pause();
     }
 
-    sleep(5);
+    // sleep(5);
     // reverse circular signalling p1->p4->p3->p2->p1 3 times
     printf("reverse circular signalling 3 times\n");
     fflush(stdout);

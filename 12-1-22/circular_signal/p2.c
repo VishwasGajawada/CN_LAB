@@ -99,7 +99,7 @@ int main(){
     printf("p3pid: %d\n\n", p3pid);
     fflush(stdout);
 
-    sleep(5);
+    // sleep(5);
 
     // circular signal
     // reverse circular signal

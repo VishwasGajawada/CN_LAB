@@ -89,7 +89,7 @@ int main(){
     fflush(stdout);
 
 
-    sleep(5);
+    // sleep(5);
     
     // circular signal
     // reverse circular signal

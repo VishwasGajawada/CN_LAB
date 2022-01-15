@@ -89,7 +89,7 @@ int main(){
     printf("p4pid: %d\n\n", p4pid);
     fflush(stdout);
 
-    sleep(5);
+    // sleep(5);
     
     // circular signal
     // reverse circular signal
