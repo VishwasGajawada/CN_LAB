@@ -2,31 +2,28 @@
 #include <stdio.h>
 #include <unistd.h>
 /* for semaphores */
-#include <fcntl.h>           /* For O_* constants */
-#include <sys/stat.h>        /* For mode constants */
-#include <semaphore.h>
+#include <sys/sem.h>
 #include <sys/ipc.h>
 #include <string.h>
 #include <errno.h>
 
 int main(){
-    sem_t *s34 = sem_open("S34", O_CREAT, 0666, 0);
-    sem_t *s41= sem_open("S41", O_CREAT, 0666, 0);
+    key_t key = ftok("p1.c",'a');
+    int s34 = semget(key, 1, 0666 | IPC_CREAT);
+    int s41 = semget(key, 1, 0666 | IPC_CREAT);
 
-    if(s34 == SEM_FAILED || s41 == SEM_FAILED){
-        perror("sem_open");
-        return 1;
-    }
+    struct sembuf P[1] = {{ .sem_num = 0, .sem_op = -1, .sem_flg = 0}};
+    struct sembuf V[1] = {{ .sem_num = 0, .sem_op = 1, .sem_flg = 0}};
 
     char c;
     while(1){
         printf("I am P4. I am waiting for Semaphore S34.\n");
-        sem_wait(s34);
+        semop(s34, P, 1);
         printf("I got semaphore S34 signalling from P3.\n");
-        printf("Enter any character to sem-signal(S41) :");
+        printf("Enter any character to sem-signal(S41) : ");
         scanf(" %c", &c);
         printf("I am signalling semaphore signal of S41.\n\n");
-        sem_post(s41);
+        semop(s41, V, 1);
     }
     return 0;
 }
