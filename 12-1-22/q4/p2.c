@@ -31,18 +31,16 @@ int main(){
     }
 
     // attach to shared memory
-    char* x = shmat(shmidx, NULL, 0);
-    char* y = shmat(shmidy, NULL, 0);
+    int* x = (int *)shmat(shmidx, NULL, 0);
+    int* y = (int *)shmat(shmidy, NULL, 0);
 
-    // P1 initialises x=1, and y=1
-    strcpy(x,"1");
-    strcpy(y,"1");
+    *x = 1;
+    *y = 1;
 
-    char localcopy_x[100] = {0};
     int limit = 5;
     while(1){
         printf("\n");
-        if(strlen(x) >= limit){
+        if((*x) >= limit){
             printf("length of x exceeded %d, stopping\n", limit);
             break;
         }
@@ -51,11 +49,10 @@ int main(){
 
         printf("I am reading shm x\n");
         // read(x)
-        strcpy(localcopy_x, x);
-        printf("x = %s\n", localcopy_x);
+        printf("x = %d\n", *x);
 
         // make y = x+1
-        sprintf(y,"%s1",localcopy_x);
+        *y = *x+1;
 
         printf("Enter any char to signal S2 : ");
         char c[10];
@@ -65,20 +62,21 @@ int main(){
         sem_post(s2);
     }
 
-    printf("x=%s and y=%s\n", x, y);
+    sleep(1);
+    printf("x=%d and y=%d\n", *x, *y);
 
     /* cleaning */
     if (sem_close(s1) != 0){
         perror("sem_close s1"); ;
     }
     if (sem_unlink("S1") < 0){
-        perror("sem_unlink S1"); ;
+        printf("already removed\n");
     }
     if (sem_close(s2) != 0){
         perror("sem_close s2"); ;
     }
     if (sem_unlink("S2") < 0){
-        perror("sem_unlink S2"); ;
+        printf("already removed\n");
     }
 
     // detach from shared memory
