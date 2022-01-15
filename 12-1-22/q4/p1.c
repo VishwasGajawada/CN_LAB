@@ -73,21 +73,21 @@ int main(){
         perror("sem_close s1"); ;
     }
     if (sem_unlink("S1") < 0){
-        printf("already removed\n");
+        // printf("already removed\n");
     }
     if (sem_close(s2) != 0){
         perror("sem_close s2"); ;
     }
     if (sem_unlink("S2") < 0){
-        printf("already removed\n");
+        // printf("already removed\n");
     }
 
     // detach from shared memory
     if (shmdt(x) < 0) { perror("shmdt"); }
     if (shmdt(y) < 0) { perror("shmdt"); }
 
-    if(shmctl(shmidx, IPC_RMID, NULL) < 0) { printf("already removed\n"); }
-    if(shmctl(shmidy, IPC_RMID, NULL) < 0) { printf("already removed\n"); return 1; }
+    if(shmctl(shmidx, IPC_RMID, NULL) < 0) { /* printf("already removed\n"); */ }
+    if(shmctl(shmidy, IPC_RMID, NULL) < 0) { /* printf("already removed\n"); */ }
     return 0;
 }
 // gcc p1.c -lpthread -o p1.exe
