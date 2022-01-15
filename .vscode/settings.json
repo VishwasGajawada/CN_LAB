@@ -6,6 +6,9 @@
         "**/requirements{/**,*}.{txt,in}": "pip-requirements",
         "unistd.h": "c",
         "stdio.h": "c",
-        "stat.h": "c"
+        "stat.h": "c",
+        "shm.h": "c",
+        "errno.h": "c",
+        "signal.h": "c"
     }
 }

@@ -13,7 +13,7 @@ struct msgbuf {
     char mtext[100];
 };
 
-int p4pid;
+int p4pid=-1;
 int p2pid;
 
 int sigusr1_count = 0;
@@ -61,7 +61,8 @@ int main(){
     kill(p2pid, SIGUSR1);
 
     // wait for p4 signal and store its p4pid
-    pause();
+    while(p4pid == -1)
+        pause();
 
     printf("p1pid: %d\n", p1pid);
     printf("p2pid: %d\n", p2pid);

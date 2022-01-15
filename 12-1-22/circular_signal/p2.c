@@ -14,7 +14,7 @@ struct msgbuf {
 };
 
 int p3pid;
-int p1pid;
+int p1pid=-1;
 
 int sigusr1_count = 0;
 int sigusr2_count = 0;
@@ -72,7 +72,8 @@ int main(){
     }
 
     // wait for p1 signal and store its p1pid
-    pause();
+    while(p1pid == -1)
+        pause();
 
     // p2 recieves message from ms1 and notes p3pid
     if(msgrcv(msqid, &msg, sizeof(msg.mtext), 3, 0) == -1) {

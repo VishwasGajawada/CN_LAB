@@ -14,7 +14,7 @@ struct msgbuf {
 };
 
 int p4pid;
-int p2pid;
+int p2pid=-1;
 int sigusr1_count = 0;
 int sigusr2_count = 0;
 void sigusr1_handler(int signo, siginfo_t *info, void *context) {
@@ -70,7 +70,8 @@ int main(){
     }
 
     // wait for p2 signal and store its p2pid
-    pause();
+    while(p2pid == -1)
+        pause();
 
 
     // p3 recieves message from msq of type4 and finds p4pid
