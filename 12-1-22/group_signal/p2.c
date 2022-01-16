@@ -17,30 +17,28 @@ int p3pid;
 int p1pid=-1;
 int grouppid;
 
-int sigusr1_count = 0;
-int sigusr2_count = 0;
 
 void sigusr1_handler(int signo, siginfo_t *info, void *context) {
-    sigusr1_count++;
-    if (sigusr1_count == 1) {
-        p1pid = info->si_pid;
-        return;
-    }
+    p1pid = info->si_pid;
+    return;
 }
 
-void sigusr2_handler(int signo){
-    sigusr2_count++;
-    kill(p3pid, SIGUSR2);
-    kill(getpid(), SIGINT);
+void sigusr2_handler(int signo, siginfo_t *info, void *context){
+    int sent_pid = info->si_pid;
+    printf("signal recieved from %d\n", sent_pid);
+
 }
 
 int main(){
     struct sigaction act;
     act.sa_flags = SA_SIGINFO;
     act.sa_sigaction = sigusr1_handler;
+    struct sigaction act2;
+    act2.sa_flags = SA_SIGINFO;
+    act2.sa_sigaction = sigusr2_handler;
 
     sigaction(SIGUSR1, &act, NULL);
-    signal(SIGUSR2, sigusr2_handler);
+    sigaction(SIGUSR2, &act2, NULL);
 
     int p2pid = getpid();
     struct msgbuf msg;
@@ -101,13 +99,10 @@ int main(){
     grouppid = atoi(msg.mtext);
 
     printf("p2pid: %d\n", p2pid);
-    // printf("p1pid: %d\n", p1pid);
-    // printf("p3pid: %d\n", p3pid);
-    // printf("grouppid: %d\n\n", grouppid);
     fflush(stdout);
 
-    // // send sigusr2 to group
-    // killpg(grouppid, SIGUSR2);
+    // send sigusr2 to group
+    killpg(grouppid, SIGUSR2);
 
     return 0;
 }

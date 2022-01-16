@@ -35,9 +35,12 @@ int main(){
     struct sigaction act;
     act.sa_flags = SA_SIGINFO;
     act.sa_sigaction = sigusr1_handler;
+    struct sigaction act2;
+    act2.sa_flags = SA_SIGINFO;
+    act2.sa_sigaction = sigusr2_handler;
 
     sigaction(SIGUSR1, &act, NULL);
-    sigaction(SIGUSR2, &act, NULL);
+    sigaction(SIGUSR2, &act2, NULL);
 
     int p1pid = getpid();
     struct msgbuf msg;
@@ -120,12 +123,11 @@ int main(){
     char temp[100];
     scanf("%s", temp);
 
-    // now terminate all the process in circular fashion
-    kill(p2pid, SIGUSR2);
     if (msgctl(msqid, IPC_RMID, NULL) == -1) {
         perror("msgctl");
         return 1;
     }
+
     printf("Message Queue removed\n");
     return 0;
 }
