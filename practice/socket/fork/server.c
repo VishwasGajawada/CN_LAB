@@ -48,7 +48,7 @@ int main() {
         }
         int c = fork();
         if (c > 0) {
-
+            close(nsfd);
         }
         else {
             printf("handler assigned\n");
