@@ -51,8 +51,7 @@ int main() {
 
         pthread_t tid;
         pthread_create(&tid, NULL, server_thread, (void*)&nsfd);
-        printf("handler assigned\n");
-        close(nsfd);
+        printf("handler assigned\n\n");
     }
     close(nsfd);
     close(sfd);
