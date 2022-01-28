@@ -91,6 +91,7 @@ int main(){
     int c = fork();
     if(c>0){
         wait(NULL);
+        compareTestCase("OT.txt", "Pout.txt", nsfd);
     }else{
         itfd = open("IT.txt", O_RDONLY);
         poutfd = open("Pout.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
@@ -107,7 +108,6 @@ int main(){
         exit(0);
     }
 
-    compareTestCase("OT.txt", "Pout.txt", nsfd);
 
     // close fds
     close(nsfd);
