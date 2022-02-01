@@ -1,0 +1,21 @@
+// compilation
+sudo make
+
+// insert compiled module into kernel
+sudo insmod read_write.ko, or   make insert
+
+// see log message
+dmesg | tail , or, tail /var/log/syslog, or  make log
+
+
+// create device file
+sudo mknod /dev/read_write c -m 0666 <major> 0
+
+// remove device file
+sudo rm /dev/read_write
+
+// remove module from kernel
+sudo rmmod read_write, or make remove
+
+// clean
+make clean
