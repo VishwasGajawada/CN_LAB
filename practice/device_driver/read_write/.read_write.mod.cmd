@@ -1,1 +1,0 @@
-cmd_/home/vishwas/Desktop/CN_LAB/practice/device_driver/read_write/read_write.mod := { echo  /home/vishwas/Desktop/CN_LAB/practice/device_driver/read_write/read_write.o;  echo; } > /home/vishwas/Desktop/CN_LAB/practice/device_driver/read_write/read_write.mod

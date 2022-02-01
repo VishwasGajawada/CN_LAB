@@ -1,1 +1,0 @@
-cmd_/home/vishwas/Desktop/CN_LAB/practice/device_driver/read_write/Module.symvers := sed 's/\.ko$$/\.o/' /home/vishwas/Desktop/CN_LAB/practice/device_driver/read_write/modules.order | scripts/mod/modpost -m -a  -o /home/vishwas/Desktop/CN_LAB/practice/device_driver/read_write/Module.symvers -e -i Module.symvers   -T -

@@ -1,1 +1,0 @@
-cmd_/home/vishwas/Desktop/CN_LAB/practice/device_driver/read_write/modules.order := {   echo /home/vishwas/Desktop/CN_LAB/practice/device_driver/read_write/read_write.ko; :; } | awk '!x[$$0]++' - > /home/vishwas/Desktop/CN_LAB/practice/device_driver/read_write/modules.order
