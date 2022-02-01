@@ -1,0 +1,21 @@
+// compilation
+sudo make
+
+// insert compiled module into kernel
+sudo insmod chardev.ko, or   make insert
+
+// see log message
+dmesg | tail , or, tail /var/log/syslog, or  make log
+
+
+// create device file
+sudo mknod /dev/chardev c -m 0666 <major> 0
+
+// remove device file
+sudo rm /dev/chardev
+
+// remove module from kernel
+sudo rmmod chardev, or make remove
+
+// clean
+make clean
