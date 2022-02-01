@@ -2,13 +2,13 @@
 sudo make
 
 // insert compiled module into kernel
-sudo insmod code.ko
+sudo insmod basic.ko
 
 // see log message
 dmesg | tail , or, tail /var/log/syslog
 
 // remove module from kernel
-sudo rmmod code
+sudo rmmod basic
 
 // clean
 make clean

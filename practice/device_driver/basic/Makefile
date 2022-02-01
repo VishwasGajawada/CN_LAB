@@ -1,4 +1,4 @@
-obj-m	:= code.o
+obj-m	:= basic.o
 KDIR	:= /lib/modules/$(shell uname -r)/build
 PWD	:=$(shell pwd)
 default:
