@@ -14,19 +14,17 @@ int in_temp, out_temp;
 
 int atoi(char *str)
 {
-    int res = 0;
-    int sign = 1;
-    int i = 0;
-    if (str[0] == '-')
-    {
-        sign = -1;
-        i = 1;
-    }
-    for (; str[i] != '\0'; ++i)
-    {
-        res = res * 10 + str[i] - '0';
-    }
-    return sign * res;
+  int res = 0;
+  int sign = 1;
+  int i = 0;
+  if (str[0] == '-'){
+    sign = -1;
+    i = 1;
+  }
+  for (; str[i] != '\0'; ++i){
+    res = res * 10 + str[i] - '0';
+  }
+  return sign * res;
 }
 
 int C_to_F(int temp){
@@ -41,7 +39,7 @@ int F_to_C(int temp){
 
 static int open_dev(struct inode *inode, struct file *filep) {
   printk("open_dev\n");
-  mybuf = (char *)kmalloc(10, GFP_KERNEL);
+  mybuf = (char *)kmalloc(100, GFP_KERNEL);
   return 0;
 }
 
@@ -57,18 +55,18 @@ static ssize_t read_dev(struct file *filep, char __user *buff, size_t len, loff_
   if(copy_to_user(buff, mybuf, len)) {
     return -EFAULT;
   }
-  return 10;
+  return sizeof(read_dev);
 }
 
-static ssize_t write_dev(struct file *filep, const char *buff, size_t len, loff_t *off) {
+static ssize_t write_dev(struct file *filep, const char __user *buff, size_t len, loff_t *off) {
   printk("write_dev\n");
   if(copy_from_user(mybuf, buff, len)) {
     printk("copy_from_user failed\n");
     return -EFAULT;
   }
   int choice = (int)(mybuf[0] - '0');
-  mybuf = mybuf + 2;
-  in_temp = atoi(mybuf);
+  char *temp = mybuf + 2;
+  in_temp = atoi(temp);
 
 
   if(choice == 1){

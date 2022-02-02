@@ -15,20 +15,20 @@ int main(){
         scanf("%d", &choice);
         scanf("%d", &temp); 
 
-        char buf[10];
+        char buf[100];
         sprintf(buf, "%d_%d", choice, temp);
-        write(fd, buf, 10);
+        write(fd, buf, 100);
 
-        memset(buf, 0, 10);
-        read(fd, buf, 10);
+        memset(buf, 0, 100);
+        read(fd, buf, 100);
         int converted_temp = atoi(buf);
 
         switch(choice){
             case 1:
-                printf("%d in Farenheit is %d\n\n", temp, converted_temp);
+                printf("%d in Farenheit is %d°F \n\n", temp, converted_temp);
                 break;
             case 2:
-                printf("%d in Celsius is %d\n\n", temp, converted_temp);
+                printf("%d in Celsius is %d°C\n\n", temp, converted_temp);
                 break;
         }
 
