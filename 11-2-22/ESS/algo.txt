@@ -10,6 +10,5 @@ Clients :
 
 Server :
 
-- will msgrcv pid for the first client and will send signal and send_fd(usfd, sfd) to it
-- next continuosly accept and interact with clients
+- continuosly accept and interact with clients
 

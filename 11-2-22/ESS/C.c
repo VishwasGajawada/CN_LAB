@@ -72,7 +72,6 @@ int main() {
     printf("From server: %s\n", buf);
 
     close(usfd);
-    // usfd = serv_uds_listen(uds_path);
     /* look for next client in the sharing */
     msg.mtype = 1;
     memset(msg.mtext, 0, sizeof(msg.mtext));
