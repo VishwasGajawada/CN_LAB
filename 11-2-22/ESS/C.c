@@ -44,6 +44,9 @@ int main() {
     msqid = msgq_init();
     if(msqid < 0) handle_error("msgq_init");
 
+    int d;
+    printf("Enter any digit to add this process to message queue : ");
+    scanf("%d", &d);
     /* add pid to message queue */
     struct msgbuf msg;
     msg.mtype = 1;
@@ -58,7 +61,7 @@ int main() {
     if(usfd < 0) handle_error("cli_uds_conn");
 
     sfd = recv_fd(usfd);
-    printf("recieved sfd\n");
+    printf("recieved sfd from previous client\n");
 
     /* interact with server */
     char buf[100] = {0};

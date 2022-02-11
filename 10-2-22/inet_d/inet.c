@@ -92,7 +92,7 @@ int send_fd(int socket, int fd_to_send) {
 
 int main() {
     int usfd[2] = {serv_uds_listen(S1_PATH), serv_uds_listen(S2_PATH)};
-    if (usfd < 0) { return -1;}
+    // if (usfd < 0) { return -1;}
 
     int sfd = serv_tcp_listen(8080);
     if (sfd < 0) { return -1;}
