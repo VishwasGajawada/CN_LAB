@@ -1,0 +1,14 @@
+Clients : 
+
+- clients will send their pid to message queue
+- some fello will read this pid
+- after finishing his work, he will signal client
+- client will send connect request after recieving signal
+- other fello will accept() and send_fd(sfd) to this client
+- client will communicate with ESS through sfd
+- now we become "some fello" read pid in msgq , and send signal and send_fd
+
+Server :
+
+- continuosly accept and interact with clients
+
