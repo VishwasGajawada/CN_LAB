@@ -53,8 +53,7 @@ int main() {
     }
     while(1) {
         int c_start = nsfd_start, c_end = nsfd_count;
-        int ready = poll(ppfd, 1, -1);
-        // int ready = poll(ppfd, 5, -1);
+        int ready = poll(ppfd, 5, -1);
         for(int i=0; i<5; i++) {
             if(ppfd[i].revents == 0) continue;
             if(ppfd[i].revents & POLLIN) {
@@ -69,7 +68,6 @@ int main() {
                     nsfds[nsfd_count] = c_sfd;
                     nsfd_count++;
                 }else {
-                    continue;
                     char msg[100] = {0};
                     int rd = read(read_fds[i], msg, sizeof(msg));
                     if(rd == -1) {
@@ -116,13 +114,14 @@ int main() {
             if(FD_ISSET(read_fds[i], &copyset)) {
                 if(i == 0) {
                     bzero(&caddr, sizeof(caddr));
-                    nsfds[nsfd_count] = accept(read_fds[i], (struct sockaddr*)&caddr, &caddr_len);
-                    if(nsfds[nsfd_count] == -1) {
+                    int c_sfd = accept(read_fds[0], (struct sockaddr*)&caddr, &caddr_len);
+                    if(c_sfd == -1) {
                         perror("accept");
-                    } else {
-                        printf("Client accepted\n");
-                        nsfd_count++;
+                        continue;
                     }
+                    printf("Client accepted\n");
+                    nsfds[nsfd_count] = c_sfd;
+                    nsfd_count++;
                 }else {
                     char msg[100] = {0};
                     int rd = read(read_fds[i], msg, sizeof(msg));
