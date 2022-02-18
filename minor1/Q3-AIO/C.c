@@ -20,9 +20,6 @@ int main() {
     char buffer[256] = {0};
     while(1) {
         int rd = recv(sockfd, buffer, 256, 0);
-        if(strcmp(buffer, "exit") == 0) {
-            break;
-        }
         if(rd <=0 ) {
             printf("connection closed\n");
             break;

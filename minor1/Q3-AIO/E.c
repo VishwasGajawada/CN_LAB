@@ -9,7 +9,7 @@ int main() {
     char buf[80] = {0};
     char msg[100] = "Hi_from_echo\n";
     while(1) {
-        // scanf("s", buf);
+        // scanf("%s", buf);
         // sprintf(msg, "echoed_%s\n", buf);
         printf("%s", msg);
         fflush(stdout);

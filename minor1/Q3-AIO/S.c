@@ -30,7 +30,6 @@ void p4_init();
 int main() {
     signal(SIGUSR1, sig_usr1_handler);
     printf("My pid is %d\n", getpid());
-    int sfd = sock_tcp_init();
     int pfd = p1_init();
     printf("p1_init() returned %d\n", pfd);
     int ffd = -1;
@@ -38,6 +37,7 @@ int main() {
     printf("p2_init() returned %d\n", ffd);
     int fd = p3_init();
     printf("p3_init() returned %d\n", fd);
+    int sfd = sock_tcp_init();
 
 
     printf("init done\n");
@@ -145,7 +145,6 @@ int main() {
     }
     */
     
-
     return 0;
 }
 
@@ -155,12 +154,12 @@ void sig_usr1_handler(int signo) {
     int nsfd = nsfds[nsfd_start];
     nsfd_start++;
 
-    // char msg[20] = "echo_start";
-    // send(nsfd, msg, sizeof(msg), 0);
+    char msg[20] = "echo_start\n";
+    send(nsfd, msg, sizeof(msg), 0);
 
     int c = fork();
     if(c > 0) {
-        // close(nsfd);
+        close(nsfd);
     }else if(c == 0) {
         // dup2(nsfd, 0);
         dup2(nsfd, 1);
