@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <sys/poll.h>
 
 
 #define NUM_WAITERS 3
@@ -24,8 +25,11 @@ int main() {
 
 
     int wnsfd[NUM_WAITERS];
+    struct pollfd pfd[NUM_WAITERS];
     for(int i = 0; i < NUM_WAITERS; i++) {
         wnsfd[i] = accept(dsfd, NULL, NULL);
+        pfd[i].fd = wnsfd[i];
+        pfd[i].events = POLLIN;
     }
 
     while(1) {
@@ -36,7 +40,14 @@ int main() {
             break;
         }
         char combo_items[20];
-        recv(wnsfd[0], combo_items, sizeof(combo_items), 0);
+        // any waiter can send. so do poll
+        poll(pfd, NUM_WAITERS, -1);
+        for(int i = 0; i < NUM_WAITERS; i++) {
+            if(pfd[i].revents & POLLIN) {
+                recv(wnsfd[i], combo_items, sizeof(combo_items), 0);
+                break;
+            }
+        }
 
         printf("Combo items: %s\n", combo_items);
         // handover parcel to customer
