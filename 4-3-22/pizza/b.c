@@ -11,7 +11,7 @@
 #define handle_error(msg) \
     do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
-#define NUM_WAITERS 1
+#define NUM_WAITERS 3
 
 int serv_tcp_listen(int port) ;
 int serv_uds_listen(char *path) ;
@@ -23,6 +23,7 @@ void sigusr1_handler(int signo);
 
 /* stage */
 int main() {
+    signal(SIGUSR1, sigusr1_handler);
     time_t t;
     srand((unsigned) time(&t));
 
@@ -60,6 +61,7 @@ int main() {
 
         char combo[10];
         recv(nsfd, combo, sizeof(combo), 0);
+        printf("Clients combo = %s\n", combo);
 
         int w = getWaiter();
         // pass customer
@@ -172,5 +174,6 @@ int send_fd(int socket, int fd_to_send) {
 }
 
 void sigusr1_handler(int signo) {
-
+    printf("signal received\n");
+    fflush(stdout);
 }

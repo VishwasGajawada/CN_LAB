@@ -8,7 +8,7 @@
 #include <signal.h>
 
 
-#define NUM_WAITERS 1
+#define NUM_WAITERS 3
 
 #define handle_error(msg) \
     do { perror(msg); exit(EXIT_FAILURE); } while (0)
@@ -30,8 +30,13 @@ int main() {
 
     while(1) {
         int fd = recv_fd(busfd);
+        printf("fd = %d\n", fd);
+        if(fd < 0) {
+            printf("Shop closed\n");
+            break;
+        }
         char combo_items[20];
-        recv(fd, combo_items, sizeof(combo_items), 0);
+        recv(wnsfd[0], combo_items, sizeof(combo_items), 0);
 
         printf("Combo items: %s\n", combo_items);
         // handover parcel to customer

@@ -19,13 +19,21 @@ int cli_tcp_connect(int port);
 int main() {
     int sfd = cli_tcp_connect(8080);
 
-    char combo[10] = "1";
+    char combo[10] = {0};
+    printf("Enter combo number (1-3) : ");
+    scanf("%s", combo);
     send(sfd, combo, sizeof(combo), 0);
+
+    printf("Enter your items (%s) : ", combo);
+    char items[100] = "biryani";
+    scanf("%s", items);
+    send(sfd, items, sizeof(items), 0);
 
     char combo_items[20];
     recv(sfd, combo_items, sizeof(combo_items), 0);
 
     printf("Combo items: %s\n", combo_items);
+
 
     return 0;
 }

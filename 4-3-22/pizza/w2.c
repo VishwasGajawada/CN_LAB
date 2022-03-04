@@ -17,7 +17,7 @@ int recv_fd(int socket) ;
 int pidof(char *name);
 
 int main() {
-    int busfd = cli_uds_conn("w1");
+    int busfd = cli_uds_conn("w2");
     int dsfd = cli_tcp_connect(8081);
     int bpid = pidof("b.exe");
 
