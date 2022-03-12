@@ -1,0 +1,6 @@
+g++ -g s.cpp -lACE -o s
+g++ -g a.cpp -lACE -o a
+g++ -g p.cpp -lACE -o p
+g++ -g j1.cpp -lACE -o j1
+g++ -g j2.cpp -lACE -o j2
+g++ -g j3.cpp -lACE -o j3
