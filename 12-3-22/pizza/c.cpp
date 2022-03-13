@@ -28,12 +28,12 @@ int main() {
     // send(sfd, combo, sizeof(combo), 0);
 
     printf("Enter your items (%s) : ", combo);
-    char items[100] = "biryani";
+    fflush(stdout);
+    char items[100] = "biryani\n";
     scanf("%s", items);
     sstream.send_n(items, sizeof(items));
-    // send(sfd, items, sizeof(items), 0);
 
-    char combo_items[20];
+    char combo_items[20] = {0};
     sstream.recv_n(combo_items, sizeof(combo_items));
     // recv(sfd, combo_items, sizeof(combo_items), 0);
 

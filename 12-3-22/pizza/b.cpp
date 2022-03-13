@@ -53,12 +53,13 @@ int main() {
     srand((unsigned) time(&t));
 
     ACE_INET_Addr saddr(8080, INADDR_LOOPBACK);
-    ACE_UNIX_Addr daddr("d");
+    unlink("d");
+    ACE_UNIX_Addr daddr("d"), waddr[NUM_WAITERS];
     ACE_SOCK_Acceptor sacc(saddr);
     ACE_LSOCK_Acceptor wacc[NUM_WAITERS], dacc(daddr);
     ACE_LSOCK_Stream wstream[NUM_WAITERS], dstream;
 
-    dacc.accept(dstream);
+    if( dacc.accept(dstream) == -1) handle_error("dacc.accept");
 
     // /* connection with delivery boy */
     // dsfd = serv_uds_listen("d");
@@ -70,8 +71,13 @@ int main() {
     for(int i = 0; i < NUM_WAITERS; i++) {
         char buf[10];
         sprintf(buf, "w%d", i+1);
+        // printf("%s\n", buf);
+        unlink(buf);
+
+        waddr[i] = ACE_UNIX_Addr(buf);
+        wacc[i] = ACE_LSOCK_Acceptor(waddr[i]);
         ACE_UNIX_Addr waddr(buf);
-        wacc[i].accept(wstream[i]);
+        if( wacc[i].accept(wstream[i]) == -1) handle_error("wacc.accept");
 
         // wsfd[i] = serv_uds_listen(buf);
         // if(wsfd[i] < 0) handle_error("serv_uds_listen");
@@ -81,7 +87,7 @@ int main() {
 
    
 
-    ACE_SOCK_Stream nstream;
+    ACE_SOCK_Stream nstream; 
     // int nsfd;
     while(1) {
         sacc.accept(nstream);

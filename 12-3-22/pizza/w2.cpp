@@ -19,7 +19,7 @@ int main() {
     ACE_UNIX_Addr baddr("w2");
     ACE_LSOCK_Connector bcon;
     ACE_LSOCK_Stream bstream;
-    bcon.connect(bstream, baddr);
+    if( bcon.connect(bstream, baddr) == -1) handle_error("");
     // int busfd = cli_uds_conn("w1");
 
     ACE_INET_Addr daddr(8081, INADDR_LOOPBACK);
@@ -27,35 +27,38 @@ int main() {
     ACE_SOCK_Stream dstream;
     dcon.connect(dstream, daddr);
     // int dsfd = cli_tcp_connect(8081);
-    int bpid = pidof("b.exe");
+    char bexe[] = "b.exe";
+    int bpid = pidof(bexe);
 
     while(1) {
         ACE_HANDLE h;
-        int fd = bstream.recv_handle(h);
+        bstream.recv_handle(h);
         // int fd = recv_fd(busfd);
-        printf("fd = %d\n", fd);
-        if(fd < 0) {
-            printf("Shop closed\n");
-            break;
-        }
 
         char combo[10];
         bstream.recv_n(combo, sizeof(combo));
         // recv(busfd, combo, sizeof(combo), 0);
         printf("combo = %s\n", combo);
 
-        char combo_items[20];
+        char combo_items[20] = "before";
         // sprintf(combo_items, "%s_items", combo);
-        recv(fd, combo_items, sizeof(combo_items), 0);
+        ACE_SOCK_Stream stream (h);
+        int sz = stream.recv_n(combo_items, sizeof(combo_items));
+        // int sz = recv(fd, combo_items, sizeof(combo_items), 0);
+        combo_items[sz] = '\0';
         printf("combo_items = %s\n", combo_items);
 
         sleep(1);
         kill(bpid, SIGUSR1);
 
-        dstream.send_n(combo_items, sizeof(combo_items));
+        // strcat(combo_items,"_w");
+        char msg[100];
+        sprintf(msg, "%s.", combo_items);
+        // dstream.send_n(combo_items, sizeof(combo_items));
+        dstream.send_n(msg, sizeof(msg));
         // send(dsfd, combo_items, sizeof(combo_items), 0);
     }
-
+    
 
     return 0;
 }

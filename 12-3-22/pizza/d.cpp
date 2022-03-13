@@ -7,6 +7,7 @@
 #include <ace/LSOCK_Acceptor.h>
 #include <ace/LSOCK_Stream.h>
 #include <ace/LSOCK_Connector.h>
+#include <ace/Handle_Set.h>
 #include <time.h>
 
 
@@ -29,136 +30,55 @@ int main() {
     ACE_UNIX_Addr baddr("d");
     ACE_LSOCK_Connector bcon;
     ACE_LSOCK_Stream bstream;
-    bcon.connect(bstream, baddr);
+    if( bcon.connect(bstream, baddr) == -1) handle_error("");
     // int busfd = cli_uds_conn("d");
 
-    ACE_SOCK_Acceptor wstream[NUM_WAITERS];
+    ACE_SOCK_Stream wstream[NUM_WAITERS];
     // int wnsfd[NUM_WAITERS];
-    struct pollfd pfd[NUM_WAITERS];
+
+    ACE_Handle_Set rset;
+    // struct pollfd pfd[NUM_WAITERS];
     for(int i = 0; i < NUM_WAITERS; i++) {
-        dacc.accept(wstream[i], daddr);
+        dacc.accept(wstream[i]);
         // wnsfd[i] = accept(dsfd, NULL, NULL);
-        pfd[i].fd = wnsfd[i];
-        pfd[i].events = POLLIN;
+        rset.set_bit(wstream[i].get_handle());
+        // pfd[i].fd = wnsfd[i];
+        // pfd[i].events = POLLIN;
     }
 
     while(1) {
-        int fd = recv_fd(busfd);
-        printf("fd = %d\n", fd);
-        if(fd < 0) {
-            printf("Shop closed\n");
-            break;
-        }
+        ACE_HANDLE h;
+        bstream.recv_handle(h);
+        // int fd = recv_fd(busfd);
         char combo_items[20];
         // any waiter can send. so do poll
-        poll(pfd, NUM_WAITERS, -1);
-        for(int i = 0; i < NUM_WAITERS; i++) {
-            if(pfd[i].revents & POLLIN) {
-                recv(wnsfd[i], combo_items, sizeof(combo_items), 0);
+        ACE_Handle_Set copyset = rset;
+        ACE::select(ACE_DEFAULT_SELECT_REACTOR_SIZE, copyset);
+        for(int i=0; i<NUM_WAITERS; i++) {
+            if(copyset.is_set(wstream[i].get_handle())) {
+
+                char buf[100] = {0};
+                wstream[i].recv_n(buf, sizeof(buf));
                 break;
             }
         }
+        // poll(pfd, NUM_WAITERS, -1);
+        // for(int i = 0; i < NUM_WAITERS; i++) {
+        //     if(pfd[i].revents & POLLIN) {
+        //         recv(wnsfd[i], combo_items, sizeof(combo_items), 0);
+        //         break;
+        //     }
+        // }
 
         printf("Combo items: %s\n", combo_items);
         // handover parcel to customer
 
-        send(fd, combo_items, sizeof(combo_items), 0);
+        ACE_SOCK_Stream stream (h);
+        stream.send_n(combo_items, sizeof(combo_items));
+        // send(h, combo_items, sizeof(combo_items), 0);
     }
 
     return 0;
 }
-
-int cli_uds_conn(char *path) {
-    int fd;
-    struct sockaddr_un un;
-
-    fd = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (fd < 0) {
-        perror("socket");
-        return -1;
-    }
-
-    bzero(&un, sizeof(un));
-    un.sun_family = AF_UNIX;
-    strcpy(un.sun_path, path);
-    if(connect(fd, (struct sockaddr *)&un, sizeof(un)) < 0) {
-        perror("connect");
-        return -1;
-    }
-
-    return fd;
-}
-
-
-int serv_tcp_listen(int port) {
-    int fd;
-    struct sockaddr_in addr;
-
-    fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0) {
-        perror("socket");
-        return -1;
-    }
-
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
-    int opt = 1;
-    // Forcefully attaching socket to the port, so that bind already in use error doesnt occur
-    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
-        perror("setsockopt");
-        return 1;
-    }
-    if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-        perror("bind");
-        return -1;
-    }
-
-    if (listen(fd, 5) < 0) {
-        perror("listen");
-        return -1;
-    }
-
-    return fd;
-}
-
-int recv_fd(int socket) {
-    int recieved_fd;
-    struct msghdr msg;
-    struct cmsghdr *cmsg;
-    char buf[1];
-    struct iovec io = { .iov_base = buf, .iov_len = sizeof(buf) };
-    char ancillary_element_buffer[CMSG_SPACE(sizeof(int))];
-
-    memset(&ancillary_element_buffer, 0, sizeof(ancillary_element_buffer));
-    memset(&msg, 0, sizeof(msg));
-
-    msg.msg_iov = &io;
-    msg.msg_iovlen = 1;
-    msg.msg_control = ancillary_element_buffer;
-    msg.msg_controllen = sizeof(ancillary_element_buffer);
-
-    if(recvmsg(socket, &msg, 0) < 0) {
-        perror("recvmsg");
-        return -1;
-    }
-
-    if(buf[0] != 'F') {
-        /* this did not originate from send_fd */
-        return -1;
-    }
-
-    /* iterate ancillary elements */
-    for(cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL; cmsg = CMSG_NXTHDR(&msg, cmsg)) {
-        if( (cmsg->cmsg_level == SOL_SOCKET) && cmsg->cmsg_type == SCM_RIGHTS) {
-            recieved_fd = *((int *) CMSG_DATA(cmsg));
-            return recieved_fd;
-        }
-    }
-    return -1;
-}
-
-
 
 
