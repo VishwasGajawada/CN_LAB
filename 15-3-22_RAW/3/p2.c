@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include<arpa/inet.h> // for inet_ntoa()
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ether.h>
@@ -11,17 +12,17 @@
 void print_ipheader(struct iphdr* ip) {
 	printf("---------------------\n");
 	printf("Printing IP header.\n");
-	printf("IP version:%ld\n",(unsigned int)ip->version);
-	printf("IP header length:%ld\n",(unsigned int)ip->ihl);
-	printf("Type of service:%ld\n",(unsigned int)ip->tos);
+	printf("IP version:%u\n",(unsigned int)ip->version);
+	printf("IP header length:%u\n",(unsigned int)ip->ihl);
+	printf("Type of service:%u\n",(unsigned int)ip->tos);
 	printf("Total ip packet length:%d\n",ntohs(ip->tot_len));
 	printf("Packet id:%d\n",ntohs(ip->id));
 	printf("Time to leave :%d\n",(unsigned int)ip->ttl);
 	printf("Protocol:%d\n",(unsigned int)ip->protocol);
 	printf("Check:%d\n",ip->check);
-	printf("Source ip:%d\n",inet_ntoa(*(struct in_addr*)&ip->saddr));
+	printf("Source ip:%s\n",inet_ntoa(*(struct in_addr*)&ip->saddr));
 	//printf("%pI4\n",&ip->saddr );
-	printf("Destination ip:%d\n",inet_ntoa(*(struct in_addr*)&ip->daddr));
+	printf("Destination ip:%s\n",inet_ntoa(*(struct in_addr*)&ip->daddr));
 	printf("End of IP header\n");
 	printf("---------------------\n");
 }
