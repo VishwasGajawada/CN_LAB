@@ -48,6 +48,10 @@ int main() {
     printf("Response received\n");
     printf("%s\n", server_reply);
 
+    int a = 100;
+    send(sfd, &a, sizeof(a), 0);
+    perror("Send");
+
     close(sfd);
 
     return 0;

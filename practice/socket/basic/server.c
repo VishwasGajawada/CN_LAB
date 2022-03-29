@@ -49,6 +49,10 @@ int main() {
     char* reply = "hello client\n";
     send(nsfd, reply, strlen(reply), 0);
 
+    int a;
+    recv(nsfd, &a, sizeof(a), 0);
+    printf("Recieved %d\n", a);
+    
     close(nsfd);
     close(sfd);
     return 0;
