@@ -59,10 +59,10 @@ int main() {
     faddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     while(1) {
-        int ready = poll(pfd, 2, -1);
+        int ready = poll(pfd, 3, -1);
         if(ready == -1) continue;
 
-        for(int i=0; i<2; i++) {
+        for(int i=0; i<3; i++) {
             if(pfd[i].revents == 0) continue;
             if(pfd[i].revents & POLLIN) {
                 int vehicle_fd  = recv_fd(pfd[i].fd);
