@@ -1,0 +1,42 @@
+
+
+***********************TCP Packet*************************
+
+IP Header
+   |-IP Version        : 4
+   |-IP Header Length  : 5 DWORDS or 20 Bytes
+   |-Type Of Service   : 0
+   |-IP Total Length   : 31  Bytes(Size of Packet)
+   |-Identification    : 54321
+   |-TTL      : 255
+   |-Protocol : 2
+   |-Checksum : 58277
+   |-Source IP        : 1.2.3.4
+   |-Destination IP   : 0.0.0.0
+
+TCP Header
+   |-Source Port      : 51721
+   |-Destination Port : 10001
+   |-Sequence Number    : 0
+   |-Acknowledge Number : 0
+   |-Header Length      : 0 DWORDS or 0 BYTES
+   |-Urgent Flag          : 0
+   |-Acknowledgement Flag : 0
+   |-Push Flag            : 0
+   |-Reset Flag           : 0
+   |-Synchronise Flag     : 0
+   |-Finish Flag          : 0
+   |-Window         : 0
+   |-Checksum       : 0
+   |-Urgent Pointer : 0
+
+Payload : 
+                        DATA Dump                         
+IP Header
+    45 00 00 1F D4 31 00 00 FF 02 E3 A5 01 02 03 04         E....1..........
+    00 00 00 00                                             ....
+TCP Header
+Data Payload
+    CA 09 27 11 00 00 00 00 00 00 00                        ..'........
+
+###########################################################

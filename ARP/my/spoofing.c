@@ -34,9 +34,7 @@
 
 #define IP_LENGTH 4 // ip4 4 bytes
 
-#define BROADCAST_ADDR \
-
-(uint8_t[6]) { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }
+#define BROADCAST_ADDR (uint8_t[6]) { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }
 
 #define SPOOFED_PACKET_SEND_DELAY 1
 
