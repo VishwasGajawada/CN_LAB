@@ -1,6 +1,8 @@
 // gcc spoofing.c
 //sudo ./a.out 172.30.136.6(gateway) 172.30.142.16(target) enp0s3(interface)
 
+// sudo ./spoofing.exe 172.30.136.6 172.30.137.44 enp0s3
+
 #include <stdlib.h>
 
 #include <string.h>
