@@ -86,7 +86,7 @@ int init_raw_socket(int proto, struct sockaddr_in *saddr) {
 
     (*saddr).sin_family = AF_INET;
     // (*saddr).sin_addr.s_addr = inet_addr("172.30.143.26"); /* found by running ifconfig */
-    (*saddr).sin_addr.s_addr = INADDR_ANY;
+    (*saddr).sin_addr.s_addr = inet_addr("127.0.0.1");
 
     return rsfd;
 }
@@ -94,21 +94,35 @@ int init_raw_socket(int proto, struct sockaddr_in *saddr) {
 void send_packet(int rsfd, int proto, char buf[], struct sockaddr_in *saddr) {
     char packet[1024] = {0}; 
 
-    struct ip *iph = (struct ip *)packet;
+    // struct ip *iph = (struct ip *)packet;
 
-    iph->ip_hl = 5;
-    iph->ip_v = 4;
-    iph->ip_tos = 0;
-    iph->ip_len = sizeof(struct ip) + strlen(buf);
-    iph->ip_id = htons(54321);
-    iph->ip_off = 0;
-    iph->ip_ttl = 255;
-    iph->ip_p = proto;
-    iph->ip_sum = 0;
-    iph->ip_src.s_addr = inet_addr("1.2.3.4"); // spoofed
-    iph->ip_dst.s_addr = (*saddr).sin_addr.s_addr; // target
-    iph->ip_sum = csum((unsigned short *)packet, iph->ip_len >> 1);
+    // iph->ip_hl = 5;
+    // iph->ip_v = 4;
+    // iph->ip_tos = 0;
+    // iph->ip_len = sizeof(struct ip) + sizeof(struct tcphdr) + strlen(buf);
+    // iph->ip_id = htons(54321);
+    // iph->ip_off = 0;
+    // iph->ip_ttl = 255;
+    // iph->ip_p = proto;
+    // iph->ip_sum = 0;
+    // iph->ip_src.s_addr = inet_addr("1.2.3.4"); // spoofed
+    // iph->ip_dst.s_addr = (*saddr).sin_addr.s_addr; // target
+    // iph->ip_sum = csum((unsigned short *)packet, iph->ip_len >> 1);
 
+    struct iphdr *iph = (struct iphdr *)packet;
+    iph->ihl = 5;
+	iph->version = 4;
+	iph->tos = 0;
+	iph->tot_len = sizeof(struct iphdr) + sizeof(struct tcphdr) + strlen(buf);
+	iph->id = htonl(54321);
+	iph->frag_off = 0;
+	iph->ttl = 255;
+	iph->protocol = IPPROTO_TCP;
+	iph->check = 0; // Checksum
+	iph->saddr = inet_addr("1.2.3.4");
+	iph->daddr = inet_addr("127.0.0.1");
+    iph->check = csum((unsigned short *)packet, iph->tot_len >> 1);
+    
     struct tcphdr *tcph = (struct tcphdr *)(packet + sizeof(struct ip));
     tcph->source = htons(51721);
 	tcph->dest = htons(10001);
@@ -125,10 +139,10 @@ void send_packet(int rsfd, int proto, char buf[], struct sockaddr_in *saddr) {
 	tcph->check = 0;
 	tcph->urg_ptr = 0;
 
-    char *message = (char *)(iph)+(iph->ip_hl*4)+sizeof(struct tcphdr);
+    char *message = packet + sizeof(struct ip) + sizeof(struct tcphdr);
     strcpy(message, buf);
 
-    if(sendto(rsfd, packet, iph->ip_len, 0, (struct sockaddr *)saddr, sizeof(*saddr)) < 0) {
+    if(sendto(rsfd, packet, iph->tot_len, 0, (struct sockaddr *)saddr, sizeof(*saddr)) < 0) {
         perror("sendto");
         exit(0);
     }
@@ -138,8 +152,8 @@ void send_packet(int rsfd, int proto, char buf[], struct sockaddr_in *saddr) {
 int main(){
     int rsfd;
     struct sockaddr_in saddr;
-    // int proto = IPPROTO_TCP;
-    int proto = 2;
+    int proto = IPPROTO_TCP;
+    // int proto = 2;
     rsfd = init_raw_socket(proto, &saddr);
 
     int op  = 1;

@@ -48,7 +48,7 @@ void printTcpPacket(unsigned char * Buffer, int Size) {
     struct iphdr *iph = (struct iphdr *)(Buffer);
     iphdrlen = iph->ihl*4;
      
-    struct tcphdr *tcph=(struct tcphdr*)(Buffer + iphdrlen);
+    struct tcphdr *tcph=(struct tcphdr*)(Buffer + sizeof(struct iphdr));
      
     fprintf(logfile , "\n\n***********************TCP Packet*************************\n");  
          
@@ -74,20 +74,21 @@ void printTcpPacket(unsigned char * Buffer, int Size) {
     
     
     // fprintf(logfile, "Payload : %s\n", (Buffer + iphdrlen + tcph->doff*4));
+    // fprintf(logfile, "Payload : %s\n", (Buffer + iphdrlen));
     fprintf(logfile, "Payload : %s\n", (Buffer + iphdrlen + sizeof(struct tcphdr)));
     
     
-    fprintf(logfile , "                        DATA Dump                         ");
-    fprintf(logfile , "\n");
+    // fprintf(logfile , "                        DATA Dump                         ");
+    // fprintf(logfile , "\n");
 
-    fprintf(logfile , "IP Header\n");
-    printData(Buffer,iphdrlen);
+    // fprintf(logfile , "IP Header\n");
+    // printData(Buffer,iphdrlen);
          
-    fprintf(logfile , "TCP Header\n");
-    printData(Buffer+iphdrlen,tcph->doff*4);
+    // fprintf(logfile , "TCP Header\n");
+    // printData(Buffer+iphdrlen,tcph->doff*4);
          
-    fprintf(logfile , "Data Payload\n");    
-    printData(Buffer + iphdrlen + tcph->doff*4 , (Size - tcph->doff*4-iph->ihl*4) );
+    // fprintf(logfile , "Data Payload\n");    
+    // printData(Buffer + iphdrlen + tcph->doff*4 , (Size - tcph->doff*4-iph->ihl*4) );
                          
     fprintf(logfile , "\n###########################################################");
 }
@@ -129,8 +130,8 @@ void printData (unsigned char* data , int Size) {
 }
 
 int main() {
-    // int proto = IPPROTO_TCP;
-    int proto = 2;
+    int proto = IPPROTO_TCP;
+    // int proto = 2;
 
     int rsfd = socket(AF_INET, SOCK_RAW, proto);
     if(rsfd < 0) perror("socket");
@@ -138,9 +139,11 @@ int main() {
     logfile=fopen("log.txt","w");
     if(logfile==NULL) {
         printf("Unable to create file.");
+    }else {
+        printf("Opened log file\n");
     }
 
-    char buf[65536];
+    char buf[1024] = {0};
     int size = recvfrom(rsfd, buf, sizeof(buf), 0, NULL, NULL);
     if(size < 0) perror("recvfrom");
 
