@@ -77,6 +77,21 @@ int main()
 		printf("Unable to create file.");
 	}
 	
+	char filter_exp[] = "ether dst 02:03:04:02:03:04"; // filter expression
+    bpf_u_int32 subnet_mask, ip;
+
+    /* Snapshot length is how many bytes to capture from each packet. This includes*/
+    int snapshot_length = 1024;
+
+    /* End the loop after this many packets are captured */
+    struct bpf_program filter;
+
+    int total_packet_count = 10;
+    u_char *my_arguments = NULL;
+    pcap_lookupnet(devname, &ip, &subnet_mask, errbuf);
+    pcap_compile(handle, &filter, filter_exp, 0, ip);
+    pcap_setfilter(handle, &filter);
+
 	//Put the device in sniff loop
 	pcap_loop(handle , -1 , process_packet , NULL);
 	
@@ -101,7 +116,7 @@ void process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char
 			++igmp;
 			break;
 		
-		case 6:  //TCP Protocol
+		case 6:  //TCP Protocol+
 			++tcp;
 			print_tcp_packet(buffer , size);
 			break;
@@ -131,6 +146,7 @@ void print_ethernet_header(const u_char *Buffer, int Size)
 
 void print_ip_header(const u_char * Buffer, int Size)
 {
+
 	print_ethernet_header(Buffer , Size);
   
 	unsigned short iphdrlen;
@@ -140,6 +156,7 @@ void print_ip_header(const u_char * Buffer, int Size)
 	
 	memset(&source, 0, sizeof(source));
 	source.sin_addr.s_addr = iph->saddr;
+	
 	
 	memset(&dest, 0, sizeof(dest));
 	dest.sin_addr.s_addr = iph->daddr;

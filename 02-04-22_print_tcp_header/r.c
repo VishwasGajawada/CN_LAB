@@ -16,7 +16,7 @@ void printIpHeader(unsigned char* Buffer, int Size) {
     struct sockaddr_in source,dest;
 	unsigned short iphdrlen;
 		
-	struct iphdr *iph = (struct iphdr *)Buffer;
+    struct iphdr *iph = (struct iphdr *)Buffer;
 	iphdrlen =iph->ihl*4;
 	
 	memset(&source, 0, sizeof(source));

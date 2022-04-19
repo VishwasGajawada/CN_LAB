@@ -7,10 +7,10 @@ IP Header
    |-IP Header Length  : 5 DWORDS or 20 Bytes
    |-Type Of Service   : 0
    |-IP Total Length   : 51  Bytes(Size of Packet)
-   |-Identification    : 44463
+   |-Identification    : 48523
    |-TTL      : 255
    |-Protocol : 6
-   |-Checksum : 35598
+   |-Checksum : 31538
    |-Source IP        : 1.2.3.4
    |-Destination IP   : 127.0.0.1
 
