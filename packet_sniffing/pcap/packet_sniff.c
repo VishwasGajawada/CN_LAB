@@ -62,7 +62,7 @@ int main()
 	
 	//Open the device for sniffing
 	printf("Opening device %s for sniffing ... " , devname);
-	handle = pcap_open_live(devname , 65536 , 1 , 0 , errbuf);
+	handle = pcap_open_live(devname , 65536 , 1 , 1 , errbuf);
 	
 	if (handle == NULL) 
 	{
@@ -77,7 +77,7 @@ int main()
 		printf("Unable to create file.");
 	}
 	
-	char filter_exp[] = "port 8080"; // filter expression
+	char filter_exp[] = ""; // filter expression
     bpf_u_int32 subnet_mask, ip;
 
     /* Snapshot length is how many bytes to capture from each packet. This includes*/
@@ -92,6 +92,7 @@ int main()
     pcap_compile(handle, &filter, filter_exp, 0, ip);
     pcap_setfilter(handle, &filter);
 
+	pcap_set_immediate_mode(handle, 1);
 	//Put the device in sniff loop
 	pcap_loop(handle , -1 , process_packet , NULL);
 	

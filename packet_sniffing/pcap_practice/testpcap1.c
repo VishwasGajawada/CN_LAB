@@ -54,7 +54,7 @@ int main(int argc, char **argv)
        not!! Be sure you know the rules of the network you are running on
        before you set your card in promiscuous mode!!     */
 
-    descr = pcap_open_live(dev,BUFSIZ,0,-1,errbuf);
+    descr = pcap_open_live(dev,BUFSIZ,0,1,errbuf);
 
     if(descr == NULL)
     {
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
      */
 
     printf("Grabbed packet of length %d\n",hdr.len);
-    printf("Recieved at ..... %s\n",ctime((const time_t*)&hdr.ts.tv_sec)); 
+    // printf("Recieved at ..... %s\n",ctime((const time_t*)&hdr.ts.tv_sec)); 
     printf("Ethernet address length is %d\n",ETHER_HDR_LEN);
 
     /* lets start with the ether header... */

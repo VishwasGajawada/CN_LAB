@@ -44,9 +44,7 @@ struct _arp_hdr {
 char *allocate_strmem (int);
 uint8_t *allocate_ustrmem (int);
  
-int
-main (int argc, char **argv)
-{
+int main (int argc, char **argv) {
   int i, status, frame_length, sd, bytes;
   char *interface, *target, *src_ip;
   arp_hdr arphdr;
@@ -105,10 +103,10 @@ main (int argc, char **argv)
   memset (dst_mac, 0xff, 6 * sizeof (uint8_t));
  
   // Source IPv4 address:  you need to fill this out
-  strcpy (src_ip, "172.17.112.135");
+  strcpy (src_ip, "172.20.227.159");
  
   // Destination URL or IPv4 address (must be a link-local node): you need to fill this out
-  strcpy (target, "172.30.137.44"); // this is some guy from my LAN, idk who
+  strcpy (target, "172.20.227.113"); // this is some guy from my LAN, idk who
  
   // Fill out hints for getaddrinfo().
   memset (&hints, 0, sizeof (struct addrinfo));

@@ -1,4 +1,5 @@
 *.exe
+*.out
 *.doc
 *.docx
 **/screenshots

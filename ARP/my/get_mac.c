@@ -202,12 +202,12 @@ int get_if_info(const char *ifname, uint32_t *ip, char *mac, int *ifindex)
     if (get_if_ip4(sd, ifname, ip)) {
         goto out;
     }
-    debug("get_if_info OK");
+    debug("get_if_info OK\n");
 
     err = 0;
 out:
     if (sd > 0) {
-        debug("Clean up temporary socket");
+        debug("Clean up temporary socket\n");
         close(sd);
     }
     return err;
