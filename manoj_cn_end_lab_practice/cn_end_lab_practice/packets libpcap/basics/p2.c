@@ -43,6 +43,62 @@ unsigned short in_cksum(unsigned short *addr, int len)
     answer = ~sum;
     return (answer);
 }
+void print_packet(char *buffer){
+        
+    struct iphdr *ip=(struct iphdr *)(buffer+sizeof(struct ethhdr));
+    printf("\nIP Header \n");
+	printf("------------\n");
+	printf("Check Sum : %d\n",ip->check);
+    struct sockaddr_in addr,addr1;
+    addr.sin_addr.s_addr=ip->daddr;
+    addr1.sin_addr.s_addr=ip->saddr;
+	printf("Destination Addr : %s\n",(inet_ntoa(addr.sin_addr)));
+	printf("Fragment Offset : %d\n",ip->frag_off);
+	printf("ID : %d\n",ip->id);
+	printf("IP Header Length : %d\n",(int)ip->ihl);
+	printf("IP Protocol : %d\n",ip->protocol);
+	printf("Source Address : %s\n",(inet_ntoa(addr1.sin_addr)));
+	printf("Type of Service : %d\n",ip->tos);
+	printf("Total Length : %d\n",ip->tot_len);
+	printf("Time to Live : %d\n",ip->ttl);
+	printf("IP Version : %d\n",ip->version);
+    printf("\n\n");
+
+    if(ip->protocol==6)
+    {
+        struct tcphdr *tcp;
+        tcp=(struct tcphdr*)(buffer+ip->ihl*4+sizeof(struct ethhdr));
+        printf("\nTCP Header\n");
+        printf("------------\n");
+        printf("Source Port      : %u\n",ntohs(tcp->source));
+        printf("Destination Port : %u\n",ntohs(tcp->dest));
+        printf("Sequence Number    : %u\n",ntohl(tcp->seq));
+        printf("Acknowledge Number : %u\n",ntohl(tcp->ack_seq));
+        printf("Header Length      : %d DWORDS or %d BYTES\n" ,(unsigned int)tcp->doff,(unsigned int)tcp->doff*4);
+        printf("Urgent Flag          : %d\n",(unsigned int)tcp->urg);
+        printf("Acknowledgement Flag : %d\n",(unsigned int)tcp->ack);
+        printf("Push Flag            : %d\n",(unsigned int)tcp->psh);
+        printf("Reset Flag           : %d\n",(unsigned int)tcp->rst);
+        printf("Synchronise Flag     : %d\n",(unsigned int)tcp->syn);
+        printf("Finish Flag          : %d\n",(unsigned int)tcp->fin);
+        printf("Window         : %d\n",ntohs(tcp->window));
+        printf("Checksum       : %d\n",ntohs(tcp->check));
+        printf("Urgent Pointer : %d\n",tcp->urg_ptr);
+        printf("\n\n");
+    }
+    else if(ip->protocol==17)
+    {
+        struct udphdr *udp;
+        udp=(struct udphdr*)(buffer+sizeof(struct ethhdr)+sizeof(struct iphdr));
+        printf("\nUDP Header\n");
+        printf("------------\n");
+        printf("Source Port:%d\n",ntohs(udp->source));
+        printf("Destination Port:%d\n",ntohs(udp->dest));
+        printf("UDP Length:%d\n",ntohs(udp->len));
+        printf("UDP Checksum:%d\n",ntohs(udp->check));
+        printf("\n\n");
+    }
+}
 int main()
 {
     char buff[65535];
@@ -75,7 +131,7 @@ int main()
     char dip[]="84.30.20.1";
     iph->ihl=5;
     iph->version=4;
-    iph->tot_len=sizeof(struct iphdr)+sizeof(struct tcphdr)+strlen(buff);
+    iph->tot_len=sizeof(struct iphdr)+sizeof(struct tcphdr)+5;
     iph->protocol=6;
     iph->ttl=64;
     iph->saddr=inet_addr(sip);
@@ -85,20 +141,20 @@ int main()
 
     // tcp header code
     struct tcphdr *tcp;
-    tcp = (struct tcphdr*)(buff+14+(iph->ihl*4));
+    tcp = (struct tcphdr*)(buff+sizeof(struct ether_header)+(iph->ihl*4));
 
-    tcp->dest = 2020;//destination port;
-    tcp->source = 1515;//source port;
+    tcp->dest = htons(2020);//destination port;
+    tcp->source = htons(1515);//source port;
     tcp->doff = 8;// length of tcp header
-    tcp->seq = 156851345;// sequence number;
-    tcp->ack_seq = 654864534;// acknowledgement number
+    tcp->seq = htonl(156851345);// sequence number;
+    tcp->ack_seq = htonl(654864534);// acknowledgement number
     tcp->fin = 0;
     tcp->psh = 1;
     tcp->rst = 0;
     tcp->ack = 1;
     tcp->syn = 0;// SYN bit
     tcp->urg = 0;// urgent bit
-    tcp->window = 1000;// window size
+    tcp->window = htons(1000);// window size
 
 
     char msg[]="Hello";
@@ -116,6 +172,7 @@ int main()
         fprintf(stderr, "pcap_open_live: %s\n", errbuf);
         exit(1);
     }
+        print_packet(buff);
     while(1){
         if(pcap_inject(handle,buff,n) < 0) {
             fprintf(stderr, "pcap_sendpacket: %s\n", pcap_geterr(handle));

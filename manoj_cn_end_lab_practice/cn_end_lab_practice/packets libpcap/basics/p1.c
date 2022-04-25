@@ -93,7 +93,7 @@ void packets(u_char *args, const struct pcap_pkthdr *header, const u_char *buffe
     if(ip->protocol==6)
     {
         struct tcphdr *tcp;
-        tcp=(struct tcphdr*)(buffer+sizeof(struct iphdr)+sizeof(struct ethhdr));
+        tcp=(struct tcphdr*)(buffer+ip->ihl*4+sizeof(struct ethhdr));
         printf("\nTCP Header\n");
         printf("------------\n");
         printf("Source Port      : %u\n",ntohs(tcp->source));
