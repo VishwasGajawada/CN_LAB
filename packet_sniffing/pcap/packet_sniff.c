@@ -77,7 +77,7 @@ int main()
 		printf("Unable to create file.");
 	}
 	
-	char filter_exp[] = ""; // filter expression
+	char filter_exp[] = "port 8080"; // filter expression
     bpf_u_int32 subnet_mask, ip;
 
     /* Snapshot length is how many bytes to capture from each packet. This includes*/
